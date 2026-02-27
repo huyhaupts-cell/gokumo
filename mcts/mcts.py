@@ -76,7 +76,7 @@ class MCTS:
                     with torch.no_grad():
                         policy, value = self.network(input_tensor)
                     
-                    policy_priors = torch.exp(policy[0]).detach().numpy()
+                    policy_priors = torch.exp(policy[0]).detach().cpu().numpy()
                     value = value[0, 0].item()
                     
                     node.expand(valid_moves, policy_priors)
