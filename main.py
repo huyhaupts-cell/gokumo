@@ -125,8 +125,9 @@ if __name__ == '__main__':
     # Configuration
     config = {
         'num_iterations': 100,
-        'num_games_per_iteration': 32,
-        'num_mcts_simulations': 800,
+        'num_games_per_iteration': 16,
+        'num_mcts_simulations': 200,
+        'batch_evaluation': True, 
         'batch_size': 64,
         'epochs_per_iteration': 10
     }
