@@ -1,5 +1,4 @@
 import torch
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 import numpy as np
 from environment.gomoku_env import GomokuEnv
 from network.network import GomokuNet

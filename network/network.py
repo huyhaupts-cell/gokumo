@@ -1,5 +1,4 @@
 import torch
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
@@ -102,4 +101,8 @@ class GomokuNet(nn.Module):
         # Channel 2: current player indicator
         input_tensor[2] = np.ones((board_size, board_size), dtype=np.float32) * player
         
-        return torch.FloatTensor(input_tensor).unsqueeze(0)
+        return torch.tensor(
+                    input_tensor,
+                    dtype=torch.float32,
+                    device=next(self.parameters()).device
+                    ).unsqueeze(0)
