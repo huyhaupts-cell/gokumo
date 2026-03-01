@@ -124,10 +124,10 @@ class AlphaZeroGomoku:
 if __name__ == '__main__':
     # Configuration
     config = {
-        'num_iterations': 30,
-        'num_games_per_iteration': 8,
-        'num_mcts_simulations': 150,
-        'batch_size': 128,
+        'num_iterations': 100,
+        'num_games_per_iteration': 16,
+        'num_mcts_simulations': 800,
+        'batch_size': 64,
         'epochs_per_iteration': 5
     }
     
