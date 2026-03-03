@@ -8,6 +8,7 @@ from self_play.self_play import SelfPlayParallel, SelfPlayGame
 from training.trainer import Trainer
 import os
 from datetime import datetime
+from torch.multiprocessing import Pool
 
 class AlphaZeroGomoku:
     """Main AlphaZero training loop"""
@@ -96,31 +97,39 @@ class AlphaZeroGomoku:
         
         return all_experiences
     
-    def _train_network(self) -> tuple:
-        """Train network on replay buffer"""
-        if len(self.replay_buffer) == 0:
-            return 0.0, 0.0
-        
-        return self.trainer.train_epoch(
-            self.replay_buffer,
-            batch_size=self.batch_size,
-            epochs=self.epochs_per_iteration,
-            device=self.device
-        )
-    
-    def _save_checkpoint(self, iteration: int):
-        """Save model checkpoint"""
-        checkpoint_path = os.path.join(
-            self.checkpoint_dir,
-            f"model_iter_{iteration:04d}.pt"
-        )
-        torch.save({
-            'iteration': iteration,
-            'model_state_dict': self.network.state_dict(),
-            'optimizer_state_dict': self.trainer.optimizer.state_dict(),
-        }, checkpoint_path)
+    def _run_self_play(self) -> list:
+        """Run self-play games in parallel"""
 
+        network_state = self.network.state_dict()
 
+        args = [
+            (network_state, self.num_mcts_simulations)
+            for _ in range(self.num_games_per_iteration)
+        ]
+
+        with Pool(processes=2) as pool:
+            results = pool.map(run_game, args)
+
+        all_experiences = []
+        for r in results:
+            all_experiences.extend(r)
+
+        return all_experiences
+
+def run_game(args):
+    network_state, num_simulations = args
+
+    device = torch.device("cuda")
+
+    network = GomokuNet().to(device)
+    network.load_state_dict(network_state)
+    network.eval()
+
+    env = GomokuEnv()
+    mcts = MCTS(env, network, num_simulations=num_simulations)
+
+    game = SelfPlayGame(env, network, mcts, temperature=1.0)
+    return game.play()
 if __name__ == '__main__':
     # Configuration
     config = {

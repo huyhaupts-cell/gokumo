@@ -63,11 +63,11 @@ class SelfPlayGame:
         
         return game_history
     
-    def _get_outcome(self) -> int:
-        """Get final game outcome (winner or draw)"""
-        # Implementation depends on env state
-        # Returns: 1, 2, or 0 (draw)
-        return 1  # Placeholder
+    def _get_outcome(self):
+        if self.env.done:
+        # Lấy winner từ step info
+            return self.env.current_player
+        return 0
 
 
 class SelfPlayParallel:

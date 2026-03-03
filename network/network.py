@@ -106,3 +106,23 @@ class GomokuNet(nn.Module):
                     dtype=torch.float32,
                     device=next(self.parameters()).device
                     ).unsqueeze(0)
+def prepare_batch(self, boards, players):
+    batch_size = len(boards)
+    board_size = boards[0].shape[0]
+
+    input_tensor = np.zeros((batch_size, 3, board_size, board_size),
+                            dtype=np.float32)
+
+    for i in range(batch_size):
+        board = boards[i]
+        player = players[i]
+
+        input_tensor[i, 0] = (board == player)
+        input_tensor[i, 1] = (board == (3 - player))
+        input_tensor[i, 2] = player
+
+    return torch.tensor(
+        input_tensor,
+        dtype=torch.float32,
+        device=next(self.parameters()).device
+    )
